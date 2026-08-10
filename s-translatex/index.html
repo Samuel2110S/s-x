@@ -12,7 +12,6 @@
             --sxcg: #00ff66;
         }
 
-
         * {
             box-sizing: border-box;
             margin: 0;
@@ -27,7 +26,7 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            box-sizing: border-box;
+            overflow-x: hidden;
         }
 
         .sticky-header {
@@ -41,20 +40,20 @@
             align-items: center;
             justify-content: flex-start;
             gap: 12px;
-            padding: 16px 24px;
+            padding: 16px;
             border-bottom: 1px solid #e2e8f0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
         .logo {
-            width: 32px;
-            height: 32px;
+            width: clamp(24px, 5vw, 32px);
+            height: clamp(24px, 5vw, 32px);
             object-fit: contain;
             flex-shrink: 0;
         }
 
         .sticky-header h1 {
-            font-size: 24px;
+            font-size: clamp(18px, 4vw, 24px);
             font-weight: 700;
             letter-spacing: -0.5px;
             color: #000000 !important;
@@ -62,19 +61,19 @@
 
         .translator-container {
             background: #ffffff !important;
-            width: 100%;
+            width: calc(100% - 24px);
             max-width: 800px;
-            padding: 24px;
+            padding: clamp(16px, 3vw, 24px);
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             border: 1px solid #e2e8f0;
-            margin: 20px 16px;
+            margin: 16px auto;
         }
 
         .controls-bar {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             margin-bottom: 20px;
             width: 100%;
         }
@@ -82,8 +81,8 @@
         select {
             flex: 1;
             min-width: 0;
-            padding: 12px;
-            font-size: 14px;
+            padding: 10px;
+            font-size: clamp(12px, 2.5vw, 14px);
             border-radius: 8px;
             outline: none;
             background-color: #ffffff !important;
@@ -91,6 +90,9 @@
             cursor: pointer;
             transition: all 0.2s ease;
             color: #000000 !important;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         #sourceLang {
@@ -106,7 +108,7 @@
         }
 
         .swap-btn {
-            padding: 12px 18px;
+            padding: 10px 14px;
             font-size: 16px;
             border: none;
             background: 
@@ -137,18 +139,20 @@
 
         .text-container {
             display: flex;
+            flex-wrap: wrap;
             gap: 16px;
             width: 100%;
         }
 
         .textarea-wrapper {
-            flex: 1;
+            flex: 1 1 280px;
             min-width: 0;
+            max-width: 100%;
         }
 
         textarea {
             width: 100%;
-            height: 180px;
+            height: clamp(130px, 20vh, 180px);
             padding: 14px;
             font-size: 15px;
             border-radius: 8px;
@@ -176,44 +180,6 @@
 
         textarea:focus {
             box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
-        }
-
-        @media (max-width: 600px) {
-            .sticky-header {
-                padding: 12px 16px;
-            }
-
-            .sticky-header h1 {
-                font-size: 20px;
-            }
-
-            .logo {
-                width: 26px;
-                height: 26px;
-            }
-
-            .translator-container {
-                padding: 16px;
-                margin: 12px 10px;
-            }
-
-            .text-container {
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            textarea {
-                height: 130px;
-            }
-
-            select {
-                font-size: 13px;
-                padding: 10px;
-            }
-
-            .swap-btn {
-                padding: 10px 14px;
-            }
         }
     </style>
 </head>
@@ -243,186 +209,186 @@
 
     <script>
         const languages = {
-              "auto": "Detect language",
-  "ab": "Abkhaz",
-  "ace": "Acehnese",
-  "ach": "Acholi",
-  "af": "Afrikaans",
-  "sq": "Albanian",
-  "alz": "Alur",
-  "am": "Amharic",
-  "ar": "Arabic",
-  "hy": "Armenian",
-  "as": "Assamese",
-  "awa": "Awadhi",
-  "ay": "Aymara",
-  "az": "Azerbaijani",
-  "ban": "Balinese",
-  "bm": "Bambara",
-  "ba": "Bashkir",
-  "eu": "Basque",
-  "btx": "Batak Karo",
-  "bts": "Batak Simalungun",
-  "bbc": "Batak Toba",
-  "be": "Belarusian",
-  "bem": "Bemba",
-  "bn": "Bengali",
-  "bew": "Betawi",
-  "bho": "Bhojpuri",
-  "bik": "Bikol",
-  "bs": "Bosnian",
-  "br": "Breton",
-  "bg": "Bulgarian",
-  "bua": "Buryat",
-  "yue": "Cantonese",
-  "ca": "Catalan",
-  "ceb": "Cebuano",
-  "ny": "Chichewa",
-  "zh-CN": "Chinese (Simplified)",
-  "zh-TW": "Chinese (Traditional)",
-  "cv": "Chuvash",
-  "co": "Corsican",
-  "crh": "Crimean Tatar",
-  "hr": "Croatian",
-  "cs": "Czech",
-  "da": "Danish",
-  "din": "Dinka",
-  "doi": "Dogri",
-  "nl": "Dutch",
-  "dz": "Dzongkha",
-  "en": "English",
-  "eo": "Esperanto",
-  "et": "Estonian",
-  "ee": "Ewe",
-  "fo": "Faroese",
-  "fj": "Fijian",
-  "tl": "Filipino (Tagalog)",
-  "fi": "Finnish",
-  "fr": "French",
-  "fy": "Frisian",
-  "ff": "Fula",
-  "ga": "Irish",
-  "gd": "Scottish Gaelic",
-  "gl": "Galician",
-  "ka": "Georgian",
-  "de": "German",
-  "el": "Greek",
-  "gn": "Guarani",
-  "gu": "Gujarati",
-  "ht": "Haitian Creole",
-  "ha": "Hausa",
-  "haw": "Hawaiian",
-  "he": "Hebrew",
-  "hi": "Hindi",
-  "hmn": "Hmong",
-  "hu": "Hungarian",
-  "is": "Icelandic",
-  "ig": "Igbo",
-  "iloc": "Ilocano",
-  "id": "Indonesian",
-  "it": "Italian",
-  "ja": "Japanese",
-  "jw": "Javanese",
-  "kn": "Kannada",
-  "kk": "Kazakh",
-  "km": "Khmer",
-  "rw": "Kinyarwanda",
-  "gom": "Konkani",
-  "ko": "Korean",
-  "kri": "Krio",
-  "ku": "Kurdish (Kurmanji)",
-  "ckb": "Kurdish (Sorani)",
-  "ky": "Kyrgyz",
-  "lo": "Lao",
-  "la": "Latin",
-  "lv": "Latvian",
-  "ln": "Lingala",
-  "lt": "Lithuanian",
-  "lg": "Luganda",
-  "lb": "Luxembourgish",
-  "mk": "Macedonian",
-  "mad": "Madurese",
-  "mag": "Magahi",
-  "mai": "Maithili",
-  "mak": "Makassar",
-  "mg": "Malagasy",
-  "ms": "Malay",
-  "ml": "Malayalam",
-  "mt": "Maltese",
-  "gv": "Manx",
-  "mi": "Maori",
-  "mr": "Marathi",
-  "mni-Mtei": "Meiteilon (Manipuri)",
-  "min": "Minangkabau",
-  "lus": "Mizo",
-  "mn": "Mongolian",
-  "my": "Myanmar (Burmese)",
-  "nr": "Ndebele (South)",
-  "ne": "Nepali",
-  "no": "Norwegian",
-  "nus": "Nuer",
-  "nyan": "Nyanja",
-  "or": "Odia (Oriya)",
-  "om": "Oromo",
-  "os": "Ossetian",
-  "pag": "Pangasinan",
-  "pap": "Papiamento",
-  "ps": "Pashto",
-  "fa": "Persian",
-  "pl": "Polish",
-  "pt": "Portuguese",
-  "pa": "Punjabi",
-  "qu": "Quechua",
-  "ro": "Romanian",
-  "rom": "Romani",
-  "rn": "Rundi",
-  "ru": "Russian",
-  "sm": "Samoan",
-  "sg": "Sango",
-  "sa": "Sanskrit",
-  "sat": "Santali",
-  "sr": "Serbian",
-  "st": "Sesotho",
-  "nso": "Sesotho sa Leboa (Northern Sotho)",
-  "sn": "Shona",
-  "scn": "Sicilian",
-  "sd": "Sindhi",
-  "si": "Sinhala",
-  "sk": "Slovak",
-  "sl": "Slovenian",
-  "so": "Somali",
-  "es": "Spanish",
-  "su": "Sundanese",
-  "sw": "Swahili",
-  "ss": "Swati",
-  "sv": "Swedish",
-  "tg": "Tajik",
-  "ta": "Tamil",
-  "tt": "Tatar",
-  "te": "Telugu",
-  "th": "Thai",
-  "bo": "Tibetan",
-  "ti": "Tigrinya",
-  "tpi": "Tok Pisin",
-  "ts": "Tsonga",
-  "tn": "Tswana",
-  "tr": "Turkish",
-  "tk": "Turkmen",
-  "ak": "Twi (Akan)",
-  "uk": "Ukrainian",
-  "ur": "Urdu",
-  "ug": "Uyghur",
-  "uz": "Uzbek",
-  "vec": "Venetian",
-  "vi": "Vietnamese",
-  "war": "Waray",
-  "cy": "Welsh",
-  "xh": "Xhosa",
-  "yi": "Yiddish",
-  "yo": "Yoruba",
-  "yua": "Yucatec Maya",
-  "zap": "Zapotec",
-  "zu": "Zulu"
+            "auto": "Detect language",
+            "ab": "Abkhaz",
+            "ace": "Acehnese",
+            "ach": "Acholi",
+            "af": "Afrikaans",
+            "sq": "Albanian",
+            "alz": "Alur",
+            "am": "Amharic",
+            "ar": "Arabic",
+            "hy": "Armenian",
+            "as": "Assamese",
+            "awa": "Awadhi",
+            "ay": "Aymara",
+            "az": "Azerbaijani",
+            "ban": "Balinese",
+            "bm": "Bambara",
+            "ba": "Bashkir",
+            "eu": "Basque",
+            "btx": "Batak Karo",
+            "bts": "Batak Simalungun",
+            "bbc": "Batak Toba",
+            "be": "Belarusian",
+            "bem": "Bemba",
+            "bn": "Bengali",
+            "bew": "Betawi",
+            "bho": "Bhojpuri",
+            "bik": "Bikol",
+            "bs": "Bosnian",
+            "br": "Breton",
+            "bg": "Bulgarian",
+            "bua": "Buryat",
+            "yue": "Cantonese",
+            "ca": "Catalan",
+            "ceb": "Cebuano",
+            "ny": "Chichewa",
+            "zh-CN": "Chinese (Simplified)",
+            "zh-TW": "Chinese (Traditional)",
+            "cv": "Chuvash",
+            "co": "Corsican",
+            "crh": "Crimean Tatar",
+            "hr": "Croatian",
+            "cs": "Czech",
+            "da": "Danish",
+            "din": "Dinka",
+            "doi": "Dogri",
+            "nl": "Dutch",
+            "dz": "Dzongkha",
+            "en": "English",
+            "eo": "Esperanto",
+            "et": "Estonian",
+            "ee": "Ewe",
+            "fo": "Faroese",
+            "fj": "Fijian",
+            "tl": "Filipino (Tagalog)",
+            "fi": "Finnish",
+            "fr": "French",
+            "fy": "Frisian",
+            "ff": "Fula",
+            "ga": "Irish",
+            "gd": "Scottish Gaelic",
+            "gl": "Galician",
+            "ka": "Georgian",
+            "de": "German",
+            "el": "Greek",
+            "gn": "Guarani",
+            "gu": "Gujarati",
+            "ht": "Haitian Creole",
+            "ha": "Hausa",
+            "haw": "Hawaiian",
+            "he": "Hebrew",
+            "hi": "Hindi",
+            "hmn": "Hmong",
+            "hu": "Hungarian",
+            "is": "Icelandic",
+            "ig": "Igbo",
+            "iloc": "Ilocano",
+            "id": "Indonesian",
+            "it": "Italian",
+            "ja": "Japanese",
+            "jw": "Javanese",
+            "kn": "Kannada",
+            "kk": "Kazakh",
+            "km": "Khmer",
+            "rw": "Kinyarwanda",
+            "gom": "Konkani",
+            "ko": "Korean",
+            "kri": "Krio",
+            "ku": "Kurdish (Kurmanji)",
+            "ckb": "Kurdish (Sorani)",
+            "ky": "Kyrgyz",
+            "lo": "Lao",
+            "la": "Latin",
+            "lv": "Latvian",
+            "ln": "Lingala",
+            "lt": "Lithuanian",
+            "lg": "Luganda",
+            "lb": "Luxembourgish",
+            "mk": "Macedonian",
+            "mad": "Madurese",
+            "mag": "Magahi",
+            "mai": "Maithili",
+            "mak": "Makassar",
+            "mg": "Malagasy",
+            "ms": "Malay",
+            "ml": "Malayalam",
+            "mt": "Maltese",
+            "gv": "Manx",
+            "mi": "Maori",
+            "mr": "Marathi",
+            "mni-Mtei": "Meiteilon (Manipuri)",
+            "min": "Minangkabau",
+            "lus": "Mizo",
+            "mn": "Mongolian",
+            "my": "Myanmar (Burmese)",
+            "nr": "Ndebele (South)",
+            "ne": "Nepali",
+            "no": "Norwegian",
+            "nus": "Nuer",
+            "nyan": "Nyanja",
+            "or": "Odia (Oriya)",
+            "om": "Oromo",
+            "os": "Ossetian",
+            "pag": "Pangasinan",
+            "pap": "Papiamento",
+            "ps": "Pashto",
+            "fa": "Persian",
+            "pl": "Polish",
+            "pt": "Portuguese",
+            "pa": "Punjabi",
+            "qu": "Quechua",
+            "ro": "Romanian",
+            "rom": "Romani",
+            "rn": "Rundi",
+            "ru": "Russian",
+            "sm": "Samoan",
+            "sg": "Sango",
+            "sa": "Sanskrit",
+            "sat": "Santali",
+            "sr": "Serbian",
+            "st": "Sesotho",
+            "nso": "Sesotho sa Leboa (Northern Sotho)",
+            "sn": "Shona",
+            "scn": "Sicilian",
+            "sd": "Sindhi",
+            "si": "Sinhala",
+            "sk": "Slovak",
+            "sl": "Slovenian",
+            "so": "Somali",
+            "es": "Spanish",
+            "su": "Sundanese",
+            "sw": "Swahili",
+            "ss": "Swati",
+            "sv": "Swedish",
+            "tg": "Tajik",
+            "ta": "Tamil",
+            "tt": "Tatar",
+            "te": "Telugu",
+            "th": "Thai",
+            "bo": "Tibetan",
+            "ti": "Tigrinya",
+            "tpi": "Tok Pisin",
+            "ts": "Tsonga",
+            "tn": "Tswana",
+            "tr": "Turkish",
+            "tk": "Turkmen",
+            "ak": "Twi (Akan)",
+            "uk": "Ukrainian",
+            "ur": "Urdu",
+            "ug": "Uyghur",
+            "uz": "Uzbek",
+            "vec": "Venetian",
+            "vi": "Vietnamese",
+            "war": "Waray",
+            "cy": "Welsh",
+            "xh": "Xhosa",
+            "yi": "Yiddish",
+            "yo": "Yoruba",
+            "yua": "Yucatec Maya",
+            "zap": "Zapotec",
+            "zu": "Zulu"
         };
 
         const sourceLang = document.getElementById('sourceLang');
