@@ -12,9 +12,6 @@
             --sxcg: #00ff66;
         }
 
-        :root, html, body {
-            color-scheme: light !important;
-        }
 
         * {
             box-sizing: border-box;
@@ -24,8 +21,8 @@
             color: #000000;
         }
 
-        body {
-            background-color: #ffffff !important;
+        html, body {
+            background-color: #ffffff;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -189,7 +186,7 @@
                 font-size: 20px;
             }
 
-            .gemini-logo {
+            .logo {
                 width: 26px;
                 height: 26px;
             }
@@ -222,7 +219,7 @@
 <body>
 
     <header class="sticky-header">
-        <img class="gemini-logo" src="https://www.gstatic.com/lamda/images/gemini_sparkle_aurora_33f86dc0c0257da337c63.svg" alt="Gemini Logo">
+        <img class="logo" src="https://www.gstatic.com/lamda/images/gemini_sparkle_aurora_33f86dc0c0257da337c63.svg" alt="Gemini Logo">
         <h1>S-Translatex</h1>
     </header>
 
@@ -235,10 +232,10 @@
 
         <div class="text-container">
             <div class="textarea-wrapper">
-                <textarea id="inputText" placeholder="Type text..."></textarea>
+                <textarea id="inputText" placeholder="Text..."></textarea>
             </div>
             <div class="textarea-wrapper">
-                <textarea id="outputText" placeholder="Translation" readonly></textarea>
+                <textarea id="outputText" placeholder="Translation..." readonly></textarea>
             </div>
         </div>
     </div>
@@ -246,6 +243,11 @@
     <script>
         const languages = {
             "auto": "Detect Language",
+            "ab": "Abkhaz",
+            "sq": "Albanian",
+            "ach": "Acholi",
+            "aa": "Afar",
+            "af": "Afrikaans",
             "en": "English",
             "es": "Spanish",
             "fr": "French",
@@ -257,6 +259,7 @@
             "ko": "Korean",
             "ru": "Russian",
             "ar": "Arabic",
+            "la": "Latin",
             "hi": "Hindi",
             "nl": "Dutch",
             "pl": "Polish",
@@ -282,7 +285,7 @@
                 }
             });
 
-            sourceLang.value = 'en';
+            sourceLang.value = 'auto';
             targetLang.value = 'es';
         }
 
