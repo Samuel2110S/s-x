@@ -157,6 +157,9 @@
             min-width: 0;
             width: 100%;
             max-width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         textarea {
@@ -191,6 +194,42 @@
         textarea:focus {
             box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
         }
+
+        .action-bar {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .action-btn {
+            background: 
+                radial-gradient(circle at top left, var(--sxpr) 0%, transparent 70%),
+                radial-gradient(circle at top right, var(--sxib) 0%, transparent 70%),
+                radial-gradient(circle at bottom left, var(--sxgy) 0%, transparent 70%),
+                radial-gradient(circle at bottom right, var(--sxcg) 0%, transparent 70%) !important;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: transform 0.15s ease, opacity 0.2s ease;
+            color: #ffffff !important;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+        }
+
+        .action-btn:active {
+            transform: scale(0.96);
+        }
     </style>
 </head>
 <body>
@@ -210,9 +249,17 @@
         <div class="text-container">
             <div class="textarea-wrapper">
                 <textarea id="inputText" placeholder="Text..."></textarea>
+                <div class="action-bar">
+                    <button class="action-btn" id="speakInputBtn" title="Listen">Speak</button>
+                    <button class="action-btn" id="copyInputBtn" title="Copy text">Copy</button>
+                </div>
             </div>
             <div class="textarea-wrapper">
                 <textarea id="outputText" placeholder="Translation..." readonly></textarea>
+                <div class="action-bar">
+                    <button class="action-btn" id="speakOutputBtn" title="Listen">Speak</button>
+                    <button class="action-btn" id="copyOutputBtn" title="Copy translation">Copy</button>
+                </div>
             </div>
         </div>
     </div>
@@ -406,6 +453,11 @@
         const outputText = document.getElementById('outputText');
         const swapBtn = document.getElementById('swapBtn');
 
+        const speakInputBtn = document.getElementById('speakInputBtn');
+        const copyInputBtn = document.getElementById('copyInputBtn');
+        const speakOutputBtn = document.getElementById('speakOutputBtn');
+        const copyOutputBtn = document.getElementById('copyOutputBtn');
+
         function populateDropdowns() {
             Object.entries(languages).forEach(([code, name]) => {
                 const opt1 = new Option(name, code);
@@ -473,6 +525,53 @@
                 outputText.value = 'Error connecting to translation engine.';
             }
         }
+
+        function speakText(text, langCode) {
+            if (!text.trim()) return;
+            if (!('speechSynthesis' in window)) {
+                alert('Text-to-speech is not supported in this browser.');
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(text);
+            if (langCode && langCode !== 'auto') {
+                utterance.lang = langCode;
+            }
+            window.speechSynthesis.speak(utterance);
+        }
+
+        speakInputBtn.addEventListener('click', () => {
+            speakText(inputText.value, sourceLang.value);
+        });
+
+        speakOutputBtn.addEventListener('click', () => {
+            speakText(outputText.value, targetLang.value);
+        });
+
+        async function copyToClipboard(text, buttonElement) {
+            if (!text.trim()) return;
+
+            try {
+                await navigator.clipboard.writeText(text);
+                const originalText = buttonElement.innerHTML;
+                buttonElement.innerHTML = '✓ Copied!';
+                setTimeout(() => {
+                    buttonElement.innerHTML = originalText;
+                }, 2000);
+            } catch (err) {
+                alert('Failed to copy text.');
+            }
+        }
+
+        copyInputBtn.addEventListener('click', () => {
+            copyToClipboard(inputText.value, copyInputBtn);
+        });
+
+        copyOutputBtn.addEventListener('click', () => {
+            copyToClipboard(outputText.value, copyOutputBtn);
+        });
     </script>
 </body>
 </html>
