@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://plain-enam-prod-public.komododecks.com/202608/11/oRONWz6D18XyP0TdYxyA/image.png">
-    <title>S-Mathex</title>
+    <title>S-Translatex</title>
     <style>
         :root {
             --sxpr: #ff005f;
@@ -213,7 +213,7 @@
 
     <header class="sticky-header">
         <img class="logo" src="https://plain-enam-prod-public.komododecks.com/202608/11/oRONWz6D18XyP0TdYxyA/image.png" alt="Gemini Logo">
-        <h1>S-Mathex</h1>
+        <h1>S-Translatex</h1>
     </header>
 
     <div class="calculator-container">
@@ -364,7 +364,10 @@
                 return;
             }
             window.speechSynthesis.cancel();
+
             const utterance = new SpeechSynthesisUtterance(display.value);
+            utterance.lang = 'en-US';
+
             window.speechSynthesis.speak(utterance);
         }
 
@@ -382,7 +385,6 @@
             }
         }
 
-        // Keyboard Support
         document.addEventListener('keydown', (e) => {
             if (e.key >= '0' && e.key <= '9') appendNum(e.key);
             if (e.key === '.') appendDot();
