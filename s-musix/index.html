@@ -78,18 +78,19 @@
 
         .controls-bar {
             display: flex;
+            flex-wrap: wrap;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             margin-bottom: 20px;
             width: 100%;
             min-width: 0;
         }
 
         select {
-            flex: 1 1 0;
+            flex: 2 1 200px;
             min-width: 0;
             width: 100%;
-            padding: 10px 6px;
+            padding: 10px 8px;
             font-size: clamp(12px, 2.5vw, 14px);
             border-radius: 8px;
             outline: none;
@@ -101,18 +102,45 @@
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
-        }
-
-        #instrumentSelect {
             border: 2px solid var(--sxpr) !important;
-        }
-
-        #tempoSelect {
-            border: 2px solid var(--sxib) !important;
         }
 
         select:focus {
             box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .tempo-control-container {
+            flex: 3 1 260px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid var(--sxib);
+            border-radius: 8px;
+            padding: 6px 12px;
+            background-color: #ffffff;
+        }
+
+        .tempo-control-container label {
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .tempo-control-container input[type="range"] {
+            flex: 1;
+            accent-color: var(--sxib);
+            cursor: pointer;
+        }
+
+        .tempo-control-container input[type="number"] {
+            width: 54px;
+            padding: 4px;
+            font-size: 13px;
+            font-weight: bold;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            text-align: center;
+            outline: none;
         }
 
         .swap-btn {
@@ -327,20 +355,27 @@
                 <option value="piano">Grand Piano (Sine)</option>
                 <option value="electricPiano">Electric Piano (Soft)</option>
                 <option value="brightPiano">Bright Piano (Harmonic)</option>
+                <option value="acousticGuitar">Acoustic Guitar (Plucked)</option>
+                <option value="electricGuitar">Electric Guitar (Drive)</option>
                 <option value="synth">Synth Lead (Sawtooth)</option>
                 <option value="organ">Rock Organ (Square)</option>
+                <option value="churchOrgan">Church Organ (Pipe)</option>
                 <option value="warm">Warm Lead (Triangle)</option>
                 <option value="flute">Flute (Subtle Sine)</option>
                 <option value="brass">Brass Synth (Saw Filter)</option>
                 <option value="marimba">Marimba (Percussive)</option>
+                <option value="vibraphone">Vibraphone (Metallic)</option>
+                <option value="strings">Strings Section (Sustain)</option>
                 <option value="8bit">8-Bit Retro (Pulse)</option>
             </select>
+
+            <div class="tempo-control-container">
+                <label for="tempoRange">BPM:</label>
+                <input type="range" id="tempoRange" min="20" max="220" value="120">
+                <input type="number" id="tempoNumber" min="20" max="220" value="120">
+            </div>
+
             <button class="swap-btn" id="clearBtn" title="Clear Sequence"><span>✕</span></button>
-            <select id="tempoSelect">
-                <option value="120">Tempo: Medium (120 BPM)</option>
-                <option value="80">Tempo: Slow (80 BPM)</option>
-                <option value="160">Tempo: Fast (160 BPM)</option>
-            </select>
         </div>
 
         <div class="text-container">
@@ -354,7 +389,7 @@
             <div class="textarea-wrapper">
                 <textarea id="outputText" placeholder="Musical sequence translation..." readonly></textarea>
                 <div class="action-bar">
-                    <button class="action-btn" id="speakOutputBtn">Speak Info</button>
+                    <button class="action-btn" id="speakOutputBtn">Speak</button>
                     <button class="action-btn" id="copyOutputBtn">Copy</button>
                 </div>
             </div>
@@ -443,6 +478,28 @@
                 gain.connect(ctx.destination);
                 osc.start(now);
                 osc.stop(now + duration * 0.8);
+            } else if (type === 'acousticGuitar') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.6);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 0.6);
+            } else if (type === 'electricGuitar') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.9);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 0.9);
             } else if (type === 'synth') {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
@@ -466,6 +523,23 @@
                 gain.connect(ctx.destination);
                 osc.start(now);
                 osc.stop(now + duration);
+            } else if (type === 'churchOrgan') {
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc1.type = 'square';
+                osc2.type = 'sine';
+                osc1.frequency.setValueAtTime(freq, now);
+                osc2.frequency.setValueAtTime(freq * 2, now);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.5);
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(ctx.destination);
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + duration * 1.5);
+                osc2.stop(now + duration * 1.5);
             } else if (type === 'warm') {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
@@ -517,6 +591,29 @@
                 gain.connect(ctx.destination);
                 osc.start(now);
                 osc.stop(now + 0.25);
+            } else if (type === 'vibraphone') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 2.0);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 2.0);
+            } else if (type === 'strings') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.01, now);
+                gain.gain.linearRampToValueAtTime(0.2, now + 0.15);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.4);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 1.4);
             } else if (type === '8bit') {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
@@ -532,7 +629,8 @@
         }
 
         const instrumentSelect = document.getElementById('instrumentSelect');
-        const tempoSelect = document.getElementById('tempoSelect');
+        const tempoRange = document.getElementById('tempoRange');
+        const tempoNumber = document.getElementById('tempoNumber');
         const inputText = document.getElementById('inputText');
         const outputText = document.getElementById('outputText');
         const clearBtn = document.getElementById('clearBtn');
@@ -542,6 +640,26 @@
         const speakOutputBtn = document.getElementById('speakOutputBtn');
         const copyOutputBtn = document.getElementById('copyOutputBtn');
         const pianoKeyboard = document.getElementById('pianoKeyboard');
+
+        tempoRange.addEventListener('input', () => {
+            tempoNumber.value = tempoRange.value;
+        });
+
+        tempoNumber.addEventListener('input', () => {
+            let val = parseInt(tempoNumber.value, 10);
+            if (isNaN(val)) return;
+            if (val < 20) val = 20;
+            if (val > 220) val = 220;
+            tempoRange.value = val;
+        });
+
+        tempoNumber.addEventListener('blur', () => {
+            let val = parseInt(tempoNumber.value, 10);
+            if (isNaN(val) || val < 20) val = 20;
+            if (val > 220) val = 220;
+            tempoNumber.value = val;
+            tempoRange.value = val;
+        });
 
         let whiteKeyCounter = 0;
 
@@ -622,7 +740,7 @@
 
             isPlaying = true;
             speakInputBtn.style.opacity = '0.6';
-            const bpm = parseInt(tempoSelect.value, 10) || 120;
+            const bpm = parseInt(tempoNumber.value, 10) || 120;
             const noteDuration = 60 / bpm;
             const selectedInstrument = instrumentSelect.value;
 
