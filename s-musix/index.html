@@ -278,9 +278,39 @@
             z-index: 2;
         }
 
-        .key:active, .key.active {
+        .key.black:hover,
+        .key.black:active,
+        .key.black.active {
+            background-color: #475569 !important;
+            color: #ffffff !important;
+        }
+
+        .key.white[data-color-idx="0"]:hover,
+        .key.white[data-color-idx="0"]:active,
+        .key.white[data-color-idx="0"].active {
             background-color: var(--sxpr) !important;
             color: #ffffff !important;
+        }
+
+        .key.white[data-color-idx="1"]:hover,
+        .key.white[data-color-idx="1"]:active,
+        .key.white[data-color-idx="1"].active {
+            background-color: var(--sxib) !important;
+            color: #ffffff !important;
+        }
+
+        .key.white[data-color-idx="2"]:hover,
+        .key.white[data-color-idx="2"]:active,
+        .key.white[data-color-idx="2"].active {
+            background-color: var(--sxgy) !important;
+            color: #000000 !important;
+        }
+
+        .key.white[data-color-idx="3"]:hover,
+        .key.white[data-color-idx="3"]:active,
+        .key.white[data-color-idx="3"].active {
+            background-color: var(--sxcg) !important;
+            color: #000000 !important;
         }
     </style>
 </head>
@@ -294,10 +324,16 @@
     <div class="translator-container">
         <div class="controls-bar">
             <select id="instrumentSelect">
-                <option value="piano">Piano (Sine)</option>
-                <option value="synth">Synth (Sawtooth)</option>
-                <option value="organ">Organ (Square)</option>
+                <option value="piano">Grand Piano (Sine)</option>
+                <option value="electricPiano">Electric Piano (Soft)</option>
+                <option value="brightPiano">Bright Piano (Harmonic)</option>
+                <option value="synth">Synth Lead (Sawtooth)</option>
+                <option value="organ">Rock Organ (Square)</option>
                 <option value="warm">Warm Lead (Triangle)</option>
+                <option value="flute">Flute (Subtle Sine)</option>
+                <option value="brass">Brass Synth (Saw Filter)</option>
+                <option value="marimba">Marimba (Percussive)</option>
+                <option value="8bit">8-Bit Retro (Pulse)</option>
             </select>
             <button class="swap-btn" id="clearBtn" title="Clear Sequence"><span>✕</span></button>
             <select id="tempoSelect">
@@ -360,26 +396,139 @@
             return audioCtx;
         }
 
-        function playNoteSound(freq, duration = 0.4, type = 'sine') {
+        function playNoteSound(freq, duration = 0.4, type = 'piano') {
             const ctx = getAudioContext();
             if (ctx.state === 'suspended') {
                 ctx.resume();
             }
 
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
+            const now = ctx.currentTime;
 
-            osc.type = type;
-            osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-            gain.gain.setValueAtTime(0.3, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
-
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-
-            osc.start();
-            osc.stop(ctx.currentTime + duration);
+            if (type === 'piano') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            } else if (type === 'electricPiano') {
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc1.type = 'sine';
+                osc2.type = 'triangle';
+                osc1.frequency.setValueAtTime(freq, now);
+                osc2.frequency.setValueAtTime(freq * 2, now);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.2);
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(ctx.destination);
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + duration * 1.2);
+                osc2.stop(now + duration * 1.2);
+            } else if (type === 'brightPiano') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.8);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 0.8);
+            } else if (type === 'synth') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            } else if (type === 'organ') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.setValueAtTime(0.15, now + duration * 0.8);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            } else if (type === 'warm') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.1);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 1.1);
+            } else if (type === 'flute') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.01, now);
+                gain.gain.linearRampToValueAtTime(0.25, now + 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.3);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 1.3);
+            } else if (type === 'brass') {
+                const osc = ctx.createOscillator();
+                const filter = ctx.createBiquadFilter();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now);
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(freq * 1.5, now);
+                filter.frequency.exponentialRampToValueAtTime(freq * 4, now + 0.1);
+                filter.frequency.exponentialRampToValueAtTime(freq, now + duration);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            } else if (type === 'marimba') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.6, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === '8bit') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.7);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 0.7);
+            }
         }
 
         const instrumentSelect = document.getElementById('instrumentSelect');
@@ -394,12 +543,7 @@
         const copyOutputBtn = document.getElementById('copyOutputBtn');
         const pianoKeyboard = document.getElementById('pianoKeyboard');
 
-        const instrumentWaveforms = {
-            'piano': 'sine',
-            'synth': 'sawtooth',
-            'organ': 'square',
-            'warm': 'triangle'
-        };
+        let whiteKeyCounter = 0;
 
         allNotes.forEach(note => {
             const keyEl = document.createElement('div');
@@ -407,9 +551,14 @@
             keyEl.innerText = note.isSharp ? '' : note.name;
             keyEl.dataset.note = note.name;
 
+            if (!note.isSharp) {
+                keyEl.dataset.colorIdx = whiteKeyCounter % 4;
+                whiteKeyCounter++;
+            }
+
             keyEl.addEventListener('click', () => {
                 appendNoteToInput(note.name);
-                playNoteSound(note.freq, 0.4, instrumentWaveforms[instrumentSelect.value]);
+                playNoteSound(note.freq, 0.4, instrumentSelect.value);
             });
 
             pianoKeyboard.appendChild(keyEl);
@@ -475,7 +624,7 @@
             speakInputBtn.style.opacity = '0.6';
             const bpm = parseInt(tempoSelect.value, 10) || 120;
             const noteDuration = 60 / bpm;
-            const wave = instrumentWaveforms[instrumentSelect.value];
+            const selectedInstrument = instrumentSelect.value;
 
             for (let noteName of validNotes) {
                 const freq = noteFrequencies[noteName];
@@ -483,7 +632,7 @@
                 const keyEl = pianoKeyboard.querySelector(`[data-note="${noteName}"]`);
                 if (keyEl) keyEl.classList.add('active');
 
-                playNoteSound(freq, noteDuration * 0.9, wave);
+                playNoteSound(freq, noteDuration * 0.9, selectedInstrument);
 
                 await new Promise(res => setTimeout(res, noteDuration * 1000));
 
@@ -504,8 +653,22 @@
 
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            
+            const voices = window.speechSynthesis.getVoices();
+            const englishVoice = voices.find(v => v.lang.startsWith('en'));
+            if (englishVoice) {
+                utterance.voice = englishVoice;
+            }
+
             window.speechSynthesis.speak(utterance);
         });
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+        }
 
         async function copyToClipboard(text, buttonElement) {
             if (!text.trim()) return;
