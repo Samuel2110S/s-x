@@ -110,7 +110,7 @@
         }
 
         .tempo-control-container {
-            flex: 3 1 260px;
+            flex: 3 1 240px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -352,30 +352,82 @@
     <div class="translator-container">
         <div class="controls-bar">
             <select id="instrumentSelect">
-                <option value="piano">Grand Piano (Sine)</option>
-                <option value="electricPiano">Electric Piano (Soft)</option>
-                <option value="brightPiano">Bright Piano (Harmonic)</option>
-                <option value="acousticGuitar">Acoustic Guitar (Plucked)</option>
-                <option value="electricGuitar">Electric Guitar (Drive)</option>
-                <option value="synth">Synth Lead (Sawtooth)</option>
-                <option value="organ">Rock Organ (Square)</option>
-                <option value="churchOrgan">Church Organ (Pipe)</option>
-                <option value="warm">Warm Lead (Triangle)</option>
-                <option value="flute">Flute (Subtle Sine)</option>
-                <option value="brass">Brass Synth (Saw Filter)</option>
-                <option value="marimba">Marimba (Percussive)</option>
-                <option value="vibraphone">Vibraphone (Metallic)</option>
-                <option value="strings">Strings Section (Sustain)</option>
-                <option value="8bit">8-Bit Retro (Pulse)</option>
+                <optgroup label="Pianos & Keys">
+                    <option value="piano">Grand Piano</option>
+                    <option value="electricPiano">Electric Piano</option>
+                    <option value="brightPiano">Bright Piano</option>
+                    <option value="honkyTonk">Honky-Tonk Piano</option>
+                    <option value="harpsichord">Harpsichord</option>
+                    <option value="clavinet">Clavinet Synth</option>
+                    <option value="celesta">Celesta</option>
+                </optgroup>
+
+                <optgroup label="Guitars & Bass">
+                    <option value="acousticGuitar">Acoustic Nylon Guitar</option>
+                    <option value="steelGuitar">Acoustic Steel Guitar</option>
+                    <option value="cleanElectric">Clean Electric Guitar</option>
+                    <option value="electricGuitar">Distortion Guitar</option>
+                    <option value="synthBass">Synth Bass</option>
+                    <option value="subBass">Sub Bass</option>
+                    <option value="slapBass">Slap Bass</option>
+                </optgroup>
+
+                <optgroup label="Organs">
+                    <option value="organ">Rock Organ</option>
+                    <option value="churchOrgan">Church Organ</option>
+                    <option value="reedOrgan">Reed Organ</option>
+                    <option value="accordion">Accordion</option>
+                </optgroup>
+
+                <optgroup label="Synths & Leads">
+                    <option value="synth">Sawtooth Lead</option>
+                    <option value="warm">Warm Triangle Synth</option>
+                    <option value="squareLead">Square Lead</option>
+                    <option value="cosmicSynth">Cosmic Pad</option>
+                    <option value="brassSynth">Brass Synth</option>
+                    <option value="acidSynth">Acid Resonance</option>
+                </optgroup>
+
+                <optgroup label="Orchestral & Winds">
+                    <option value="strings">Violin Strings</option>
+                    <option value="pizzicato">Pizzicato Strings</option>
+                    <option value="flute">Flute</option>
+                    <option value="piccolo">Piccolo</option>
+                    <option value="clarinet">Clarinet</option>
+                    <option value="trumpet">Trumpet</option>
+                    <option value="brass">French Horn Section</option>
+                </optgroup>
+
+                <optgroup label="Percussion & Mallets">
+                    <option value="marimba">Marimba</option>
+                    <option value="vibraphone">Vibraphone</option>
+                    <option value="xylophone">Xylophone</option>
+                    <option value="tubularBells">Tubular Bells</option>
+                    <option value="steelDrum">Steel Pan</option>
+                </optgroup>
+
+                <optgroup label="World & Ethno">
+                    <option value="sitar">Sitar Synth</option>
+                    <option value="koto">Koto</option>
+                    <option value="panFlute">Pan Flute</option>
+                    <option value="kalimba">Kalimba</option>
+                </optgroup>
+
+                <optgroup label="Retro & FX">
+                    <option value="8bit">8-Bit Retro Pulse</option>
+                    <option value="chiptuneTriangle">8-Bit NES Bass</option>
+                    <option value="theremin">Theremin</option>
+                    <option value="laser">Sci-Fi Laser Bell</option>
+                </optgroup>
             </select>
+
+            <button class="swap-btn" id="clearBtn" title="Clear Sequence"><span>✕</span></button>
 
             <div class="tempo-control-container">
                 <label for="tempoRange">BPM:</label>
                 <input type="range" id="tempoRange" min="20" max="220" value="120">
                 <input type="number" id="tempoNumber" min="20" max="220" value="120">
             </div>
-
-            <button class="swap-btn" id="clearBtn" title="Clear Sequence"><span>✕</span></button>
         </div>
 
         <div class="text-container">
@@ -389,7 +441,7 @@
             <div class="textarea-wrapper">
                 <textarea id="outputText" placeholder="Musical sequence translation..." readonly></textarea>
                 <div class="action-bar">
-                    <button class="action-btn" id="speakOutputBtn">Speak</button>
+                    <button class="action-btn" id="speakOutputBtn">Speak Info</button>
                     <button class="action-btn" id="copyOutputBtn">Copy</button>
                 </div>
             </div>
@@ -478,6 +530,60 @@
                 gain.connect(ctx.destination);
                 osc.start(now);
                 osc.stop(now + duration * 0.8);
+            } else if (type === 'honkyTonk') {
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc1.type = 'sawtooth';
+                osc2.type = 'triangle';
+                osc1.frequency.setValueAtTime(freq, now);
+                osc2.frequency.setValueAtTime(freq + 2, now);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(ctx.destination);
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + duration);
+                osc2.stop(now + duration);
+            } else if (type === 'harpsichord') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'clavinet') {
+                const osc = ctx.createOscillator();
+                const filter = ctx.createBiquadFilter();
+                const gain = ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(freq, now);
+                filter.type = 'bandpass';
+                filter.frequency.setValueAtTime(freq * 2, now);
+                gain.gain.setValueAtTime(0.35, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else if (type === 'celesta') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq * 2, now);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.5);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 1.5);
             } else if (type === 'acousticGuitar') {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
@@ -489,6 +595,34 @@
                 gain.connect(ctx.destination);
                 osc.start(now);
                 osc.stop(now + duration * 0.6);
+            } else if (type === 'steelGuitar') {
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc1.type = 'triangle';
+                osc2.type = 'sawtooth';
+                osc1.frequency.setValueAtTime(freq, now);
+                osc2.frequency.setValueAtTime(freq * 2, now);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.8);
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(ctx.destination);
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + duration * 0.8);
+                osc2.stop(now + duration * 0.8);
+            } else if (type === 'cleanElectric') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.35, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.9);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 0.9);
             } else if (type === 'electricGuitar') {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
@@ -500,17 +634,39 @@
                 gain.connect(ctx.destination);
                 osc.start(now);
                 osc.stop(now + duration * 0.9);
-            } else if (type === 'synth') {
+            } else if (type === 'synthBass') {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(freq, now);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                osc.frequency.setValueAtTime(freq / 2, now);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.7);
                 osc.connect(gain);
                 gain.connect(ctx.destination);
                 osc.start(now);
-                osc.stop(now + duration);
+                osc.stop(now + duration * 0.7);
+            } else if (type === 'subBass') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq / 2, now);
+                gain.gain.setValueAtTime(0.6, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.2);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 1.2);
+            } else if (type === 'slapBass') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(freq / 2, now);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.25);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.25);
             } else if (type === 'organ') {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
@@ -540,6 +696,45 @@
                 osc2.start(now);
                 osc1.stop(now + duration * 1.5);
                 osc2.stop(now + duration * 1.5);
+            } else if (type === 'reedOrgan') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            } else if (type === 'accordion') {
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc1.type = 'sawtooth';
+                osc2.type = 'sawtooth';
+                osc1.frequency.setValueAtTime(freq, now);
+                osc2.frequency.setValueAtTime(freq + 3, now);
+                gain.gain.setValueAtTime(0.18, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(ctx.destination);
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + duration);
+                osc2.stop(now + duration);
+            } else if (type === 'synth') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
             } else if (type === 'warm') {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
@@ -551,19 +746,30 @@
                 gain.connect(ctx.destination);
                 osc.start(now);
                 osc.stop(now + duration * 1.1);
-            } else if (type === 'flute') {
+            } else if (type === 'squareLead') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            } else if (type === 'cosmicSynth') {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(freq, now);
                 gain.gain.setValueAtTime(0.01, now);
-                gain.gain.linearRampToValueAtTime(0.25, now + 0.08);
-                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.3);
+                gain.gain.linearRampToValueAtTime(0.35, now + 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.8);
                 osc.connect(gain);
                 gain.connect(ctx.destination);
                 osc.start(now);
-                osc.stop(now + duration * 1.3);
-            } else if (type === 'brass') {
+                osc.stop(now + duration * 1.8);
+            } else if (type === 'brassSynth') {
                 const osc = ctx.createOscillator();
                 const filter = ctx.createBiquadFilter();
                 const gain = ctx.createGain();
@@ -577,6 +783,103 @@
                 gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
                 osc.connect(filter);
                 filter.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            } else if (type === 'acidSynth') {
+                const osc = ctx.createOscillator();
+                const filter = ctx.createBiquadFilter();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now);
+                filter.type = 'lowpass';
+                filter.Q.value = 10;
+                filter.frequency.setValueAtTime(freq * 5, now);
+                filter.frequency.exponentialRampToValueAtTime(freq * 0.8, now + 0.2);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            } else if (type === 'strings') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.01, now);
+                gain.gain.linearRampToValueAtTime(0.2, now + 0.15);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.4);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 1.4);
+            } else if (type === 'pizzicato') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.15);
+            } else if (type === 'flute') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.01, now);
+                gain.gain.linearRampToValueAtTime(0.25, now + 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.3);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 1.3);
+            } else if (type === 'piccolo') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq * 2, now);
+                gain.gain.setValueAtTime(0.01, now);
+                gain.gain.linearRampToValueAtTime(0.2, now + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            } else if (type === 'clarinet') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.1);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 1.1);
+            } else if (type === 'trumpet') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.9);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 0.9);
+            } else if (type === 'brass') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                osc.connect(gain);
                 gain.connect(ctx.destination);
                 osc.start(now);
                 osc.stop(now + duration);
@@ -602,18 +905,96 @@
                 gain.connect(ctx.destination);
                 osc.start(now);
                 osc.stop(now + duration * 2.0);
-            } else if (type === 'strings') {
+            } else if (type === 'xylophone') {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(freq, now);
-                gain.gain.setValueAtTime(0.01, now);
-                gain.gain.linearRampToValueAtTime(0.2, now + 0.15);
-                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.4);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq * 2, now);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
                 osc.connect(gain);
                 gain.connect(ctx.destination);
                 osc.start(now);
-                osc.stop(now + duration * 1.4);
+                osc.stop(now + 0.15);
+            } else if (type === 'tubularBells') {
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc1.type = 'sine';
+                osc2.type = 'sine';
+                osc1.frequency.setValueAtTime(freq, now);
+                osc2.frequency.setValueAtTime(freq * 2.76, now);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 2.5);
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(ctx.destination);
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + duration * 2.5);
+                osc2.stop(now + duration * 2.5);
+            } else if (type === 'steelDrum') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 0.7);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 0.7);
+            } else if (type === 'sitar') {
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc1.type = 'sawtooth';
+                osc2.type = 'sine';
+                osc1.frequency.setValueAtTime(freq, now);
+                osc2.frequency.setValueAtTime(freq * 3, now);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.2);
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(ctx.destination);
+                osc1.start(now);
+                osc2.start(now);
+                osc1.stop(now + duration * 1.2);
+                osc2.stop(now + duration * 1.2);
+            } else if (type === 'koto') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.5, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.3);
+            } else if (type === 'panFlute') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+                gain.gain.setValueAtTime(0.01, now);
+                gain.gain.linearRampToValueAtTime(0.3, now + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.1);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 1.1);
+            } else if (type === 'kalimba') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq * 2, now);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.6);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.6);
             } else if (type === '8bit') {
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
@@ -625,6 +1006,41 @@
                 gain.connect(ctx.destination);
                 osc.start(now);
                 osc.stop(now + duration * 0.7);
+            } else if (type === 'chiptuneTriangle') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq / 2, now);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration);
+            } else if (type === 'theremin') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, now);
+                osc.frequency.linearRampToValueAtTime(freq * 1.02, now + duration);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + duration * 1.5);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + duration * 1.5);
+            } else if (type === 'laser') {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(freq * 4, now);
+                osc.frequency.exponentialRampToValueAtTime(freq * 0.5, now + 0.15);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.15);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.15);
             }
         }
 
