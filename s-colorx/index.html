@@ -6,6 +6,13 @@
     <link rel="icon" href="https://plain-enam-prod-public.komododecks.com/202608/14/Nx5U5ItVmSGkyP8jKNiH/image.png">
     <title>S-Colorx</title>
     <style>
+        :root {
+            --sxpr: #ff005f;
+            --sxib: #4444ff;
+            --sxgy: #ffbb00;
+            --sxcg: #00ff66;
+        }
+
         *, *::before, *::after {
             box-sizing: border-box;
             margin: 0;
@@ -74,10 +81,10 @@
 
         .controls-grid {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 24px;
+            gap: 16px;
             width: 100%;
         }
 
@@ -100,33 +107,39 @@
         }
 
         input {
-            padding: 8px;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            padding: 10px 8px;
             font-size: 14px;
             font-weight: 600;
             text-align: center;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
             outline: none;
+            border-radius: 8px;
+            transition: all 0.2s ease;
         }
 
         .sxpr {
-            background-color: #ffaaaa;
-            color: #000000;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 2px solid var(--sxpr) !important;
         }
 
         .sxib {
-            background-color: #aaaaff;
-            color: #000000;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 2px solid var(--sxib) !important;
         }
 
         .sxgy {
-            background-color: #aaffaa;
-            color: #000000;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 2px solid var(--sxgy) !important;
         }
 
         .sxcg {
-            background-color: #ffffaa;
-            color: #000000;
+            background-color: #ffffff !important;
+            color: #000000 !important;
+            border: 2px solid var(--sxcg) !important;
         }
 
         input[type="number"] {
@@ -138,65 +151,63 @@
         }
 
         input:focus {
-            box-shadow: 0 0 0 2px rgba(85, 85, 255, 0.3);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
         }
 
         button {
             border: none;
             cursor: pointer;
-            transition: opacity 0.2s ease, transform 0.1s ease;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             gap: 4px;
+            user-select: none;
+            transition: transform 0.15s ease, opacity 0.2s ease;
+        }
+
+        button.btn-apply,
+        button.btn-copy,
+        button.btn-speak {
+            background:
+                radial-gradient(circle at top left, var(--sxpr) 0%, transparent 70%),
+                radial-gradient(circle at top right, var(--sxib) 0%, transparent 70%),
+                radial-gradient(circle at bottom left, var(--sxgy) 0%, transparent 70%),
+                radial-gradient(circle at bottom right, var(--sxcg) 0%, transparent 70%) !important;
+            border: none !important;
+            color: #ffffff !important;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
         }
 
         button.btn-apply {
-            background: linear-gradient(135deg, #5555ff 0%, #3333cc 100%);
-            color: #ffffff;
-            padding: 8px 16px;
+            padding: 10px 16px;
             font-size: 14px;
-            font-weight: 600;
-            border-radius: 6px;
+            border-radius: 8px;
         }
 
-        button.btn-copy {
-            background-color: #008000;
-            color: #ffffff;
-            padding: 8px;
-            width: 36px;
-            height: 36px;
-            border-radius: 6px;
-        }
-
+        button.btn-copy,
         button.btn-speak {
-            background-color: #ff8c00;
-            color: #ffffff;
-            padding: 8px;
-            width: 36px;
-            height: 36px;
+            min-width: 58px;
+            height: 38px;
+            padding: 8px 12px;
+            font-size: 13px;
             border-radius: 6px;
-        }
-
-        button.btn-copy svg, button.btn-speak svg {
-            width: 18px;
-            height: 18px;
-            fill: #ffffff;
-        }
-
-        button:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        button:active {
-            transform: scale(0.98);
         }
 
         .action-btns {
             display: flex;
             gap: 6px;
             align-items: center;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            opacity: 0.9;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        button:active {
+            transform: scale(0.96);
         }
 
         .preview-section {
@@ -225,12 +236,23 @@
 <body>
 
     <header class="sticky-header">
-        <img class="logo" src="https://plain-enam-prod-public.komododecks.com/202608/14/Nx5U5ItVmSGkyP8jKNiH/image.png" alt="S-Musix Logo">
+        <img class="logo" src="https://plain-enam-prod-public.komododecks.com/202608/14/Nx5U5ItVmSGkyP8jKNiH/image.png" alt="S-Colorx Logo">
         <h1>S-Colorx</h1>
     </header>
 
     <div class="translator-container">
         <div class="controls-grid">
+
+            <div class="input-group">
+                <label>HEX:</label>
+                <input type="text" id="hexarg" class="sxpr" value="ffffff" placeholder="HEX" maxlength="7">
+                <button class="btn-apply" onclick="applyHEX()">Apply HEX</button>
+                <div class="action-btns">
+                    <button class="btn-speak" onclick="speakHEX()">Speak</button>
+                    <button class="btn-copy" id="copyHexBtn" onclick="copyHEX()">Copy</button>
+                </div>
+            </div>
+
             <div class="input-group">
                 <label>RGB:</label>
                 <input type="number" id="rval" class="sxib" min="0" max="255" value="255" placeholder="R">
@@ -238,28 +260,11 @@
                 <input type="number" id="bval" class="sxcg" min="0" max="255" value="255" placeholder="B">
                 <button class="btn-apply" onclick="applyRGB()">Apply RGB</button>
                 <div class="action-btns">
-                    <button class="btn-copy" onclick="copyRGB()" title="Copy RGB">
-                        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                    </button>
-                    <button class="btn-speak" onclick="speakRGB()" title="Speak RGB">
-                        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-                    </button>
+                    <button class="btn-speak" onclick="speakRGB()">Speak</button>
+                    <button class="btn-copy" id="copyRgbBtn" onclick="copyRGB()">Copy</button>
                 </div>
             </div>
 
-            <div class="input-group">
-                <label>HEX:</label>
-                <input type="text" id="hexarg" class="sxpr" value="ffffff" placeholder="ffffff" maxlength="7">
-                <button class="btn-apply" onclick="applyHEX()">Apply HEX</button>
-                <div class="action-btns">
-                    <button class="btn-copy" onclick="copyHEX()" title="Copy HEX">
-                        <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                    </button>
-                    <button class="btn-speak" onclick="speakHEX()" title="Speak HEX">
-                        <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
-                    </button>
-                </div>
-            </div>
         </div>
 
         <div class="preview-section">
@@ -273,23 +278,27 @@
             const r = document.getElementById('rval').value || '255';
             const g = document.getElementById('gval').value || '255';
             const b = document.getElementById('bval').value || '255';
-            
+
             const rgbColor = `rgb(${r}, ${g}, ${b})`;
+
             document.getElementById('finalc').style.backgroundColor = rgbColor;
 
             const hexR = parseInt(r, 10).toString(16).padStart(2, '0');
             const hexG = parseInt(g, 10).toString(16).padStart(2, '0');
             const hexB = parseInt(b, 10).toString(16).padStart(2, '0');
+
             document.getElementById('hexarg').value = `${hexR}${hexG}${hexB}`;
         }
 
         function applyHEX() {
             let hex = document.getElementById('hexarg').value.replace('#', '') || 'ffffff';
+
             if (hex.length === 3) {
                 hex = hex.split('').map(c => c + c).join('');
             }
-            
+
             const hexColor = '#' + hex;
+
             document.getElementById('finalc').style.backgroundColor = hexColor;
 
             if (hex.length === 6) {
@@ -299,34 +308,80 @@
             }
         }
 
-        function copyRGB() {
-            const r = document.getElementById('rval').value || '255';
-            const g = document.getElementById('gval').value || '255';
-            const b = document.getElementById('bval').value || '255';
-            const text = `rgb(${r}, ${g}, ${b})`;
-            navigator.clipboard.writeText(text);
-        }
-
         function speakRGB() {
+            if (!('speechSynthesis' in window)) {
+                alert('Text-to-speech is not supported in this browser.');
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+
             const r = document.getElementById('rval').value || '255';
             const g = document.getElementById('gval').value || '255';
             const b = document.getElementById('bval').value || '255';
-            const text = `RGB ${r}, ${g}, ${b}`;
-            const utterance = new SpeechSynthesisUtterance(text);
-            window.speechSynthesis.speak(utterance);
-        }
 
-        function copyHEX() {
-            let hex = document.getElementById('hexarg').value.replace('#', '') || 'ffffff';
-            const text = `#${hex}`;
-            navigator.clipboard.writeText(text);
+            const utterance = new SpeechSynthesisUtterance(`RGB ${r}, ${g}, ${b}`);
+            utterance.lang = 'en-US';
+
+            window.speechSynthesis.speak(utterance);
         }
 
         function speakHEX() {
-            let hex = document.getElementById('hexarg').value.replace('#', '') || 'ffffff';
-            const text = `Hex ${hex.split('').join(' ')}`;
-            const utterance = new SpeechSynthesisUtterance(text);
+            if (!('speechSynthesis' in window)) {
+                alert('Text-to-speech is not supported in this browser.');
+                return;
+            }
+
+            window.speechSynthesis.cancel();
+
+            const hex = document.getElementById('hexarg').value.replace('#', '') || 'ffffff';
+            const utterance = new SpeechSynthesisUtterance(`Hex ${hex.split('').join(' ')}`);
+            utterance.lang = 'en-US';
+
             window.speechSynthesis.speak(utterance);
+        }
+
+        async function copyRGB() {
+            const btn = document.getElementById('copyRgbBtn');
+
+            try {
+                const r = document.getElementById('rval').value || '255';
+                const g = document.getElementById('gval').value || '255';
+                const b = document.getElementById('bval').value || '255';
+
+                const text = `rgb(${r}, ${g}, ${b})`;
+
+                await navigator.clipboard.writeText(text);
+
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✓ Copied!';
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            } catch (err) {
+                alert('Failed to copy result.');
+            }
+        }
+
+        async function copyHEX() {
+            const btn = document.getElementById('copyHexBtn');
+
+            try {
+                const hex = document.getElementById('hexarg').value.replace('#', '') || 'ffffff';
+                const text = `#${hex}`;
+
+                await navigator.clipboard.writeText(text);
+
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✓ Copied!';
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            } catch (err) {
+                alert('Failed to copy result.');
+            }
         }
     </script>
 </body>
