@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://plain-enam-prod-public.komododecks.com/202608/14/Nx5U5ItVmSGkyP8jKNiH/image.png">
-    <title>S-Colorx</title>
+    <title>Color Pad Tool</title>
     <style>
         *, *::before, *::after {
             box-sizing: border-box;
@@ -107,7 +107,26 @@
             border: 1px solid #cbd5e1;
             border-radius: 6px;
             outline: none;
-            background-color: #ffffff;
+        }
+
+        .sxpr {
+            background-color: #ffaaaa;
+            color: #000000;
+        }
+
+        .sxib {
+            background-color: #aaaaff;
+            color: #000000;
+        }
+
+        .sxgy {
+            background-color: #aaffaa;
+            color: #000000;
+        }
+
+        .sxcg {
+            background-color: #ffffaa;
+            color: #000000;
         }
 
         input[type="number"] {
@@ -119,17 +138,10 @@
         }
 
         input:focus {
-            border-color: #5555ff;
-            box-shadow: 0 0 0 2px rgba(85, 85, 255, 0.2);
+            box-shadow: 0 0 0 2px rgba(85, 85, 255, 0.3);
         }
 
         button {
-            background-color: #5555ff;
-            color: #ffffff;
-            padding: 8px 12px;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 6px;
             border: none;
             cursor: pointer;
             transition: opacity 0.2s ease, transform 0.1s ease;
@@ -141,22 +153,35 @@
 
         button.btn-apply {
             background: linear-gradient(135deg, #5555ff 0%, #3333cc 100%);
+            color: #ffffff;
             padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 6px;
         }
 
-        button.btn-tool {
-            background-color: #e2e8f0;
-            color: #000000;
+        button.btn-copy {
+            background-color: #008000;
+            color: #ffffff;
             padding: 8px;
             width: 36px;
             height: 36px;
             border-radius: 6px;
         }
 
-        button.btn-tool svg {
+        button.btn-speak {
+            background-color: #ff8c00;
+            color: #ffffff;
+            padding: 8px;
+            width: 36px;
+            height: 36px;
+            border-radius: 6px;
+        }
+
+        button.btn-copy svg, button.btn-speak svg {
             width: 18px;
             height: 18px;
-            fill: currentColor;
+            fill: #ffffff;
         }
 
         button:hover {
@@ -201,7 +226,7 @@
 
     <header class="sticky-header">
         <img class="logo" src="https://plain-enam-prod-public.komododecks.com/202608/14/Nx5U5ItVmSGkyP8jKNiH/image.png" alt="S-Musix Logo">
-        <h1>S-Colorx</h1>
+        <h1>S-Musix</h1>
     </header>
 
     <div class="translator-container">
@@ -213,10 +238,10 @@
                 <input type="number" id="bval" class="sxcg" min="0" max="255" value="255" placeholder="B">
                 <button class="btn-apply" onclick="applyRGB()">Apply RGB</button>
                 <div class="action-btns">
-                    <button class="btn-tool" onclick="copyRGB()" title="Copy RGB">
+                    <button class="btn-copy" onclick="copyRGB()" title="Copy RGB">
                         <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                     </button>
-                    <button class="btn-tool" onclick="speakRGB()" title="Speak RGB">
+                    <button class="btn-speak" onclick="speakRGB()" title="Speak RGB">
                         <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
                     </button>
                 </div>
@@ -227,10 +252,10 @@
                 <input type="text" id="hexarg" class="sxpr" value="ffffff" placeholder="ffffff" maxlength="7">
                 <button class="btn-apply" onclick="applyHEX()">Apply HEX</button>
                 <div class="action-btns">
-                    <button class="btn-tool" onclick="copyHEX()" title="Copy HEX">
+                    <button class="btn-copy" onclick="copyHEX()" title="Copy HEX">
                         <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
                     </button>
-                    <button class="btn-tool" onclick="speakHEX()" title="Speak HEX">
+                    <button class="btn-speak" onclick="speakHEX()" title="Speak HEX">
                         <svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
                     </button>
                 </div>
