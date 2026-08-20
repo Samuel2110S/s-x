@@ -11,6 +11,10 @@
             --sxib: #4444ff;
             --sxgy: #ffbb00;
             --sxcg: #00ff66;
+            --gradient-style: radial-gradient(circle at top left, var(--sxpr) 0%, transparent 70%),
+                              radial-gradient(circle at top right, var(--sxib) 0%, transparent 70%),
+                              radial-gradient(circle at bottom left, var(--sxgy) 0%, transparent 70%),
+                              radial-gradient(circle at bottom right, var(--sxcg) 0%, transparent 70%);
         }
 
         *, *::before, *::after {
@@ -100,7 +104,10 @@
             color: #000000 !important;
             transition: all 0.2s ease;
             box-sizing: border-box;
-            border: 2px solid var(--sxcg) !important;
+            
+            /* Gradient Border for Display */
+            border: 3px solid transparent !important;
+            border-image: var(--gradient-style) 1 !important;
         }
 
         .history-display {
@@ -134,15 +141,17 @@
             width: 100%;
             padding: 8px;
             border-radius: 6px;
-            border: 2px solid var(--sxib);
             text-align: center;
             font-size: 16px;
             font-weight: 600;
             outline: none;
-        }
-
-        .time-input:focus {
-            border-color: var(--sxpr);
+            background-color: #ffffff;
+            
+            /* Gradient Border for Time Inputs */
+            border: 2px solid transparent;
+            background-image: linear-gradient(#fff, #fff), var(--gradient-style);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
         }
 
         .controls {
@@ -152,217 +161,29 @@
             width: 100%;
         }
 
+        /* Applied Gradient Backgrounds and Glowing Gradient Borders to Buttons */
         .btn, .action-btn {
             background: 
                 radial-gradient(circle at top left, var(--sxpr) 0%, transparent 70%),
                 radial-gradient(circle at top right, var(--sxib) 0%, transparent 70%),
                 radial-gradient(circle at bottom left, var(--sxgy) 0%, transparent 70%),
                 radial-gradient(circle at bottom right, var(--sxcg) 0%, transparent 70%) !important;
-            border: none !important;
+            border: 2px solid transparent !important;
             border-radius: 8px;
             padding: 14px 6px;
             font-size: clamp(14px, 3vw, 18px);
             font-weight: 700;
             cursor: pointer;
-            transition: transform 0.15s ease, opacity 0.2s ease;
+            transition: transform 0.15s ease, opacity 0.2s ease, box-shadow 0.2s ease;
             color: #ffffff !important;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
             display: flex;
             align-items: center;
             justify-content: center;
             user-select: none;
+            box-shadow: 0 0 8px rgba(255, 0, 95, 0.3), 0 0 8px rgba(68, 68, 255, 0.3);
         }
 
         .btn:hover, .action-btn:hover {
             transform: translateY(-1px);
             opacity: 0.9;
-            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .btn:active, .action-btn:active {
-            transform: scale(0.96);
-        }
-
-        .action-bar {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 8px;
-            margin-top: 4px;
-        }
-
-        .action-btn {
-            border-radius: 6px;
-            padding: 6px 12px;
-            font-size: 13px;
-        }
-    </style>
-</head>
-<body>
-
-    <header class="sticky-header">
-        <img class="logo" src="https://plain-enam-prod-public.komododecks.com/202608/14/fr22u0Tg2MOXEzZiIGaM/image.png" alt="S-Timex Logo">
-        <h1>S-Timex</h1>
-    </header>
-
-    <div class="calculator-container">
-        <div class="display-wrapper">
-            <div class="history-display" id="statusDisplay">Set a timer (Max 24 Hours)</div>
-            <input type="text" class="calc-display" id="timerDisplay" value="00:00:00" readonly>
-        </div>
-
-        <div class="inputs-grid">
-            <div class="input-group">
-                <label for="hoursInput">Hours</label>
-                <input type="number" id="hoursInput" class="time-input" min="0" max="24" value="0">
-            </div>
-            <div class="input-group">
-                <label for="minutesInput">Minutes</label>
-                <input type="number" id="minutesInput" class="time-input" min="0" max="59" value="0">
-            </div>
-            <div class="input-group">
-                <label for="secondsInput">Seconds</label>
-                <input type="number" id="secondsInput" class="time-input" min="0" max="59" value="10">
-            </div>
-        </div>
-
-        <div class="controls">
-            <button class="btn" id="startPauseBtn" onclick="toggleTimer()">Start</button>
-            <button class="btn" onclick="resetTimer()">Reset</button>
-        </div>
-
-        <div class="action-bar">
-            <button class="action-btn" id="voiceToggleBtn" onclick="toggleSpeech()">🔊 Speech On</button>
-        </div>
-    </div>
-
-    <script>
-        let timerInterval = null;
-        let totalSeconds = 0;
-        let isRunning = false;
-        let speechEnabled = true;
-
-        const timerDisplay = document.getElementById('timerDisplay');
-        const statusDisplay = document.getElementById('statusDisplay');
-        const startPauseBtn = document.getElementById('startPauseBtn');
-        const voiceToggleBtn = document.getElementById('voiceToggleBtn');
-
-        const hoursInput = document.getElementById('hoursInput');
-        const minutesInput = document.getElementById('minutesInput');
-        const secondsInput = document.getElementById('secondsInput');
-
-        function formatTime(totalSec) {
-            const h = Math.floor(totalSec / 3600);
-            const m = Math.floor((totalSec % 3600) / 60);
-            const s = totalSec % 60;
-            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-        }
-
-        function updateDisplay() {
-            timerDisplay.value = formatTime(totalSeconds);
-        }
-
-        function speak(text) {
-            if (!speechEnabled || !('speechSynthesis' in window)) return;
-            window.speechSynthesis.cancel(); 
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            utterance.rate = 1.2; 
-            window.speechSynthesis.speak(utterance);
-        }
-
-        function toggleSpeech() {
-            speechEnabled = !speechEnabled;
-            voiceToggleBtn.innerHTML = speechEnabled ? '🔊 Speech On' : '🔇 Speech Off';
-            if (!speechEnabled && 'speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
-        }
-
-        function getInputsInSeconds() {
-            let h = parseInt(hoursInput.value) || 0;
-            let m = parseInt(minutesInput.value) || 0;
-            let s = parseInt(secondsInput.value) || 0;
-
-            let total = (h * 3600) + (m * 60) + s;
-            const maxSeconds = 24 * 3600; 
-
-            if (total > maxSeconds) {
-                total = maxSeconds;
-                hoursInput.value = 24;
-                minutesInput.value = 0;
-                secondsInput.value = 0;
-            }
-            return total;
-        }
-
-        function toggleTimer() {
-            if (isRunning) {
-                pauseTimer();
-            } else {
-                startTimer();
-            }
-        }
-
-        function startTimer() {
-            if (totalSeconds <= 0) {
-                totalSeconds = getInputsInSeconds();
-            }
-
-            if (totalSeconds <= 0) {
-                statusDisplay.innerText = "Please enter a valid time!";
-                return;
-            }
-
-            isRunning = true;
-            startPauseBtn.innerText = "Pause";
-            statusDisplay.innerText = "Timer Running...";
-            
-            updateDisplay();
-
-            timerInterval = setInterval(() => {
-                if (totalSeconds > 0) {
-                    totalSeconds--;
-                    updateDisplay();
-                    speak(totalSeconds.toString());
-                } else {
-                    pauseTimer();
-                    statusDisplay.innerText = "Time's up!";
-                    speak("Time is up!");
-                }
-            }, 1000);
-        }
-
-        function pauseTimer() {
-            clearInterval(timerInterval);
-            isRunning = false;
-            startPauseBtn.innerText = "Start";
-            if (totalSeconds > 0) {
-                statusDisplay.innerText = "Timer Paused";
-            }
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
-        }
-
-        function resetTimer() {
-            pauseTimer();
-            totalSeconds = getInputsInSeconds();
-            updateDisplay();
-            statusDisplay.innerText = "Timer Reset";
-        }
-
-        [hoursInput, minutesInput, secondsInput].forEach(input => {
-            input.addEventListener('input', () => {
-                if (!isRunning) {
-                    totalSeconds = getInputsInSeconds();
-                    updateDisplay();
-                }
-            });
-        });
-
-        totalSeconds = getInputsInSeconds();
-        updateDisplay();
-    </script>
-</body>
-</html>
