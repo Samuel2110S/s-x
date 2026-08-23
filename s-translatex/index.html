@@ -116,7 +116,7 @@
         }
 
         .swap-btn {
-            padding: 10px 14px;
+            padding: 0;
             font-size: 16px;
             border: none;
             background: 
@@ -135,11 +135,6 @@
             color: #ffffff !important;
             width: 38px;
             height: 38px;
-        }
-
-        .swap-btn span {
-            color: #ffffff !important;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
         }
 
         .swap-btn:hover {
@@ -255,7 +250,11 @@
     <div class="translator-container">
         <div class="controls-bar">
             <select id="sourceLang"></select>
-            <button class="swap-btn" id="swapBtn"><span>⇄</span></button>
+            <button class="swap-btn" id="swapBtn">
+                <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <path d="M6 9H18M15.5 6.5L18 9L15.5 11.5M18 15H6M8.5 12.5L6 15L8.5 17.5" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
             <select id="targetLang"></select>
         </div>
 
