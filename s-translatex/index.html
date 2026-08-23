@@ -251,7 +251,7 @@
         <div class="controls-bar">
             <select id="sourceLang"></select>
             <button class="swap-btn" id="swapBtn">
-                <svg class="btn-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="btn-icon">
                   <path d="M6 9H18M15.5 6.5L18 9L15.5 11.5M18 15H6M8.5 12.5L6 15L8.5 17.5" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </button>
@@ -592,7 +592,10 @@
             try {
                 await navigator.clipboard.writeText(text);
                 const originalText = buttonElement.innerHTML;
-                buttonElement.innerHTML = '✓ Copied!';
+                buttonElement.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="btn-icon">
+                                             <circle cx="12" cy="12" r="9" fill="none" stroke="#ffffff" stroke-width="2"/>
+                                             <path d="M7.5 12L10.5 15L16.5 9" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                           </svg>';
                 setTimeout(() => {
                     buttonElement.innerHTML = originalText;
                 }, 2000);
