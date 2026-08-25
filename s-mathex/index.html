@@ -186,7 +186,7 @@
                 radial-gradient(circle at bottom left, var(--sxgy) 0%, transparent 70%),
                 radial-gradient(circle at bottom right, var(--sxcg) 0%, transparent 70%) !important;
             border: none;
-            border-radius: 6px;
+            border-radius: 50%;
             padding: 6px 12px;
             font-size: 13px;
             font-weight: 600;
@@ -197,6 +197,10 @@
             transition: transform 0.15s ease, opacity 0.2s ease;
             color: #ffffff !important;
             text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+            width: 30px;
+            height: 30px;
+            align-items: center;
+            justify-content: center;
         }
 
         .action-btn:hover {
@@ -250,8 +254,20 @@
         </div>
 
         <div class="action-bar">
-            <button class="action-btn" id="speakBtn" onclick="speakResult()">Speak</button>
-            <button class="action-btn" id="copyBtn" onclick="copyResult()">Copy</button>
+            <button class="action-btn" id="speakBtn" onclick="speakResult()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 520" class="btn-icon">
+                  <path fill="#ffffff" d="M120 244H175L244 175V394L175 325H120Z"></path>
+                  <path fill="#ffffff" d="M147 271H186L216 241V328L186 298H147Z"></path>
+                  <path fill="#ffffff" d="M271 165C328 178 367 222 367 284C367 346 328 390 271 403V374C311 363 339 331 339 284C339 237 311 205 271 194Z"></path>
+                  <path fill="#ffffff" d="M271 213C294 222 306 249 306 284C306 319 294 346 271 355Z"></path>
+                </svg>
+            </button>
+            <button class="action-btn" id="copyBtn" onclick="copyResult()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="btn-icon">
+                  <path d="M8 7V5C8 3.9 8.9 3 10 3H19C20.1 3 21 3.9 21 5V14C21 15.1 20.1 16 19 16H17" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                  <rect x="3" y="7" width="14" height="14" rx="2" fill="none" stroke="#ffffff" stroke-width="2"></rect>
+                </svg>
+            </button>
         </div>
     </div>
 
