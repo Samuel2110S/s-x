@@ -59,14 +59,16 @@
 
     <script src="https://unpkg.com"></script>
     <script>
+        const initialCoords = [0.0, 0.0];
+        
         const map = L.map('map', {
             minZoom: 2,
             maxZoom: 18,
             worldCopyJump: true
-        }).setView([0, 0], 2);
+        }).setView(initialCoords, 2);
 
         L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
-            attribution: '© OpenStreetMap contributors © CARTO',
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
             subdomains: 'abcd',
             maxZoom: 20
         }).addTo(map);
