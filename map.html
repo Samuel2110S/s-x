@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Las Capas Digitales de Google Maps</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            max-width: 600px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #38bdf8;
+            margin-bottom: 10px;
+        }
+
+        p.intro {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Contenedor del escenario 3D */
+        .scene {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 650px;
+            perspective: 1200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Contenedor de las capas rotadas */
+        .stack-container {
+            position: relative;
+            width: 500px;
+            height: 300px;
+            transform: rotateX(60deg) rotateZ(-35deg);
+            transform-style: preserve-3d;
+        }
+
+        /* Estilo base para cada capa del mapa */
+        .layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.5s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            background-size: 30px 30px;
+        }
+
+        /* Efecto Hover: Separa las capas verticalmente */
+        .stack-container:hover .layer-dynamic { transform: translateZ(180px); }
+        .stack-container:hover .layer-semantic { transform: translateZ(90px); }
+        .stack-container:hover .layer-network { transform: translateZ(0px); }
+        .stack-container:hover .layer-geometry { transform: translateZ(-90px); }
+
+        /* Posiciones por defecto (Sin Hover - semi colapsadas) */
+        .layer-dynamic { 
+            transform: translateZ(120px); 
+            background-color: rgba(239, 68, 68, 0.85); /* Rojo Tráfico */
+            background-image: radial-gradient(rgba(255,255,255,0.4) 10%, transparent 10%);
+        }
+        .layer-semantic { 
+            transform: translateZ(50px); 
+            background-color: rgba(59, 130, 246, 0.85); /* Azul POIs */
+            background-image: linear-gradient(45deg, transparent 45%, rgba(255,255,255,0.1) 45%, rgba(255,255,255,0.1) 55%, transparent 55%);
+        }
+        .layer-network { 
+            transform: translateZ(-20px); 
+            background-color: rgba(16, 185, 129, 0.85); /* Verde Carreteras */
+            background-image: linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(0deg, rgba(255,255,255,0.15) 1px, transparent 1px);
+        }
+        .layer-geometry { 
+            transform: translateZ(-90px); 
+            background-color: rgba(30, 41, 59, 0.95); /* Gris Base Terreno */
+            background-image: radial-gradient(#334155 20%, transparent 20%);
+        }
+
+        /* Textos dentro de las capas (Se rotan a la inversa para legibilidad) */
+        .layer-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            transform: rotateZ(0deg);
+        }
+
+        .layer-desc {
+            font-size: 0.9rem;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 8px 12px;
+            border-radius: 6px;
+            line-height: 1.4;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Indicador flotante de instrucciones */
+        .hint {
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 0.9rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>El Mapa Mundial Digital</h1>
+        <p class="intro">Google Maps no es una foto fija; es un gemelo digital vivo del planeta construido mediante la superposición matemática de estas cuatro capas críticas.</p>
+    </header>
+
+    <div class="scene">
+        <div class="stack-container">
+            
+            <!-- CAPA 4: DINÁMICA -->
+            <div class="layer layer-dynamic">
+                <div class="layer-title">4. Capa Dinámica</div>
+                <div class="layer-desc">Datos en tiempo real: Flujo de tráfico, accidentes reportados, obras viales y retrasos en el transporte público.</div>
+            </div>
+
+            <!-- CAPA 3: SEMÁNTICA -->
+            <div class="layer layer-semantic">
+                <div class="layer-title">3. Capa Semántica</div>
+                <div class="layer-desc">El significado del mundo: Puntos de interés (POIs), nombres de negocios, reseñas, números telefónicos y horarios.</div>
+            </div>
+
+            <!-- CAPA 2: RED VIAL -->
+            <div class="layer layer-network">
+                <div class="layer-title">2. Capa de Red</div>
+                <div class="layer-desc">El modelo lógico de rutas: Calles, autopistas y senderos conectados como vectores para el cálculo de algoritmos (Dijkstra/A*).</div>
+            </div>
+
+            <!-- CAPA 1: GEOMETRÍA -->
+            <div class="layer layer-geometry">
+                <div class="layer-title">1. Capa Geométrica</div>
+                <div class="layer-desc">La base física: Imágenes satelitales, altitud del terreno, costas oceánicas y huellas de edificios en 3D.</div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="hint">
+        💡 Pasa el cursor (o mantén pulsado en móviles) sobre el mapa para separar las capas en 3D
+    </div>
+
+</body>
+</html>
+
