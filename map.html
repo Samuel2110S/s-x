@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Digital World Map - HTML5 Canvas</title>
+    <title>Global Digital Map</title>
+    <link rel="stylesheet" href="https://unpkg.com" />
     <style>
         * {
             box-sizing: border-box;
@@ -12,21 +13,20 @@
             font-family: 'Segoe UI', system-ui, sans-serif;
         }
 
-        body {
-            background-color: #0b0f19;
-            color: #f8fafc;
-            height: 100vh;
+        body, html {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            background-color: #0b0f19;
         }
 
         header {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(8px);
+            background: #0f172a;
             padding: 15px 25px;
             border-bottom: 1px solid #1e293b;
-            z-index: 10;
+            z-index: 1000;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -38,196 +38,38 @@
             font-weight: 600;
         }
 
-        .controls {
-            display: flex;
-            gap: 15px;
-            font-size: 0.85rem;
-            color: #94a3b8;
-        }
-
-        .status-panel {
-            background: rgba(30, 41, 59, 0.5);
-            padding: 4px 10px;
-            border-radius: 6px;
-            border: 1px solid #334155;
-        }
-
-        .status-value {
-            color: #4ade80;
-            font-weight: bold;
-        }
-
-        .map-wrapper {
+        .map-container {
             flex-grow: 1;
-            position: relative;
             width: 100%;
             height: 100%;
         }
 
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            cursor: crosshair;
-        }
-
-        .instructions {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.9);
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            border: 1px solid #334155;
-            pointer-events: none;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-            letter-spacing: 0.5px;
+        .leaflet-container {
+            background: #0b0f19;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Geo-Digital Map Engine v1.0</h1>
-        <div class="controls">
-            <div class="status-panel">Nodes: <span class="status-value" id="node-count">0</span></div>
-            <div class="status-panel">Routing Latency: <span class="status-value">~0.4ms</span></div>
-        </div>
+        <h1>Global Digital Map Engine</h1>
     </header>
 
-    <div class="map-wrapper">
-        <canvas id="digitalMap"></canvas>
-        <div class="instructions">
-            清洁 🪐 Click on any node to plot an **algorithmic route** instantly
-        </div>
-    </div>
+    <div id="map" class="map-container"></div>
 
+    <script src="https://unpkg.com"></script>
     <script>
-        const canvas = document.getElementById('digitalMap');
-        const ctx = canvas.getContext('2d');
+        const map = L.map('map', {
+            minZoom: 2,
+            maxZoom: 18,
+            worldCopyJump: true
+        }).setView([20, 0], 2);
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight - 60;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
-        const cities = [
-            { name: "New York", x: 0.25, y: 0.35, connections: [1, 4, 8] },
-            { name: "London", x: 0.48, y: 0.25, connections: [0, 2, 5] },
-            { name: "Paris", x: 0.51, y: 0.28, connections: [1, 5] },
-            { name: "Tokyo", x: 0.85, y: 0.38, connections: [4, 6, 7] },
-            { name: "Los Angeles", x: 0.15, y: 0.40, connections: [0, 3] },
-            { name: "Cairo", x: 0.56, y: 0.48, connections: [1, 2, 6] },
-            { name: "Mumbai", x: 0.72, y: 0.52, connections: [3, 5, 7] },
-            { name: "Sydney", x: 0.88, y: 0.80, connections: [3, 6, 8] },
-            { name: "Santiago", x: 0.28, y: 0.82, connections: [0, 7] }
-        ];
-
-        document.getElementById('node-count').innerText = cities.length;
-
-        let activeRoute = [];
-        let pulseRadius = 0;
-
-        function drawMap() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            const w = canvas.width;
-            const h = canvas.height;
-
-            ctx.strokeStyle = 'rgba(56, 189, 248, 0.04)';
-            ctx.lineWidth = 1;
-            const gridSize = 40;
-            for (let x = 0; x < w; x += gridSize) {
-                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
-            }
-            for (let y = 0; y < h; y += gridSize) {
-                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
-            }
-
-            ctx.lineWidth = 2;
-            cities.forEach(city => {
-                city.connections.forEach(targetIndex => {
-                    const target = cities[targetIndex];
-                    const isPartOfRoute = activeRoute.includes(city) && activeRoute.includes(target);
-                    
-                    ctx.beginPath();
-                    ctx.moveTo(city.x * w, city.y * h);
-                    ctx.lineTo(target.x * w, target.y * h);
-                    
-                    if (isPartOfRoute) {
-                        ctx.strokeStyle = '#f43f5e';
-                        ctx.shadowColor = '#f43f5e';
-                        ctx.shadowBlur = 10;
-                    } else {
-                        ctx.strokeStyle = 'rgba(51, 65, 85, 0.4)';
-                        ctx.shadowBlur = 0;
-                    }
-                    ctx.stroke();
-                });
-            });
-            ctx.shadowBlur = 0;
-
-            pulseRadius = (pulseRadius + 0.3) % 20;
-
-            cities.forEach(city => {
-                const cx = city.x * w;
-                const cy = city.y * h;
-
-                ctx.beginPath();
-                ctx.arc(cx, cy, pulseRadius, 0, Math.PI * 2);
-                ctx.strokeStyle = `rgba(56, 189, 248, ${1 - pulseRadius/20})`;
-                ctx.lineWidth = 1;
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.arc(cx, cy, 6, 0, Math.PI * 2);
-                const isNodeActive = activeRoute.includes(city);
-                ctx.fillStyle = isNodeActive ? '#f43f5e' : '#38bdf8';
-                ctx.fill();
-                ctx.strokeStyle = '#0b0f19';
-                ctx.lineWidth = 2;
-                ctx.stroke();
-
-                ctx.fillStyle = isNodeActive ? '#f43f5e' : '#94a3b8';
-                ctx.font = '11px sans-serif';
-                ctx.fillText(city.name, cx + 12, cy + 4);
-            });
-
-            requestAnimationFrame(drawMap);
-        }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-            
-            const w = canvas.width;
-            const h = canvas.height;
-
-            let clickedCity = null;
-            cities.forEach(city => {
-                const cx = city.x * w;
-                const cy = city.y * h;
-                const distance = Math.hypot(mouseX - cx, mouseY - cy);
-                if (distance < 20) {
-                    clickedCity = city;
-                }
-            });
-
-            if (clickedCity) {
-                if (activeRoute.length >= 2 || activeRoute.includes(clickedCity)) {
-                    activeRoute = [clickedCity];
-                } else {
-                    activeRoute.push(clickedCity);
-                }
-            }
-        });
-
-        drawMap();
+        L.tileLayer('https://{s}://{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap contributors © CARTO',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
     </script>
 </body>
 </html>
